@@ -1,0 +1,39 @@
+# Definir la arquitectura del autoencoder
+def build_autoencoder():
+    # Encoder
+    i = Input((64,48,3))
+
+    h = Conv2D(32, (3, 3), padding='same', activation='relu')(i)
+    h = MaxPool2D((2, 2))(h)
+
+    h = Conv2D(32, (3, 3), padding='same', activation='relu')(h)
+    h = MaxPool2D((2, 2))(h)
+
+    h = Conv2D(64, (3, 3), padding='same', activation='relu')(h)
+    h = MaxPool2D((2, 2))(h)
+
+    h = Conv2D(32, (3, 3), padding='same', activation='relu')(h)
+    h = Conv2D(64, (3, 3), padding='same', activation='relu')(h)
+    h = MaxPool2D((2, 2))(h)
+
+    h = UpSampling2D((2, 2))(h)
+    h = Conv2D(64, (3, 3), padding='same', activation='relu')(h)
+
+    h = UpSampling2D((2, 2))(h)
+    h = Conv2D(32, (3, 3), padding='same', activation='relu')(h)
+
+    h = UpSampling2D((2, 2))(h)
+    h = Conv2D(64, (3, 3), padding='same', activation='relu')(h)
+
+    h = UpSampling2D((2, 2))(h)
+    h = Conv2D(32, (3, 3), padding='same', activation='relu')(h)
+
+    h = BatchNormalization()(h)
+    o = Conv2D(3, (3, 3), padding='same', activation='sigmoid')(h)
+
+    autoencoder = Model(inputs=i, outputs=o)
+    return autoencoder
+
+# Construir y compilar el modelo del autoencoder
+autoencoder = build_autoencoder()
+autoencoder.summary()

@@ -1,0 +1,43 @@
+# Definir la arquitectura del autoencoder
+def build_autoencoder():
+    # Encoder
+    input_img = Input(shape=(64, 48, 3))
+    h = BatchNormalization()(input_img)
+
+    h = Conv2D(32, (3, 3), padding='same', activation='relu')(h)
+    h = Conv2D(32, (3, 3), padding='same', activation='relu')(h)
+    h = MaxPool2D((2, 2))(h)
+
+    h = Conv2D(64, (3, 3), padding='same', activation='elu')(h)
+    h = Conv2D(64, (3, 3), padding='same', activation='elu')(h)
+    h = MaxPool2D((2, 2))(h)
+
+    h = Conv2D(128, (3, 3), padding='same', activation='elu')(h)
+    h = Conv2D(128, (3, 3), padding='same', activation='elu')(h)
+    h = MaxPool2D((2, 2))(h)
+
+    encoded = Conv2D(32, (3, 3), padding='same', activation='elu')(h)
+    h = Conv2D(32, (3, 3), padding='same', activation='elu')(encoded)
+
+    h = UpSampling2D((2, 2))(h)
+    h = Conv2D(128, (3, 3), padding='same', activation='elu')(h)
+    h = Conv2D(128, (3, 3), padding='same', activation='elu')(h)
+
+    h = UpSampling2D((2, 2))(h)
+    h = Conv2D(64, (3, 3), padding='same', activation='elu')(h)
+    h = Conv2D(64, (3, 3), padding='same', activation='elu')(h)
+
+    h = UpSampling2D((2, 2))(h)
+    h = Conv2D(32, (3, 3), padding='same', activation='elu')(h)
+    h = Conv2D(32, (3, 3), padding='same', activation='elu')(h)
+    
+    h = BatchNormalization()(h)
+    decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(h)
+
+    # Autoencoder model
+    autoencoder = Model(input_img, decoded)
+    return autoencoder
+
+# Construir y compilar el modelo del autoencoder
+autoencoder = build_autoencoder()
+autoencoder.summary()
