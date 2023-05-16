@@ -1,0 +1,37 @@
+def build_autoencoder():
+    # Encoder
+    input_img = tf.keras.Input(shape=(64, 48, 3))
+    x = tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.MaxPooling2D((2, 2), padding='same')(x)
+    x = tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same')(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    encoded = tf.keras.layers.MaxPooling2D((2, 2), padding='same')(x)
+
+    # Decoder
+    x = tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same')(encoded)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.UpSampling2D((2, 2))(x)
+    x = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.UpSampling2D((2, 2))(x)
+    decoded = tf.keras.layers.Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
+
+    # Autoencoder model
+    autoencoder = tf.keras.Model(input_img, decoded)
+    return autoencoder
+
+# Construir y compilar el modelo del autoencoder
+autoencoder = build_autoencoder()
+autoencoder.summary()
+
+autoencoder.compile(optimizer='Adam', loss='mean_squared_error', metrics='Accuracy')
+X_train = original_images
+Y_train = noisy_images
+
+
+[0.000155821064254269, 0.40597787499427795]
+
+En esta versión, hemos añadido capas de normalización por lotes (BatchNormalization()) después de cada capa convolucional. Esto ayuda a estabilizar y acelerar el proceso de entrenamiento al normalizar las activaciones de las capas.

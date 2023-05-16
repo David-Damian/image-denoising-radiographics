@@ -1,0 +1,33 @@
+def build_autoencoder():
+    # Encoder
+    input_img = tf.keras.Input(shape=(64, 48, 3))
+    x = tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)
+    x = tf.keras.layers.MaxPooling2D((2, 2), padding='same')(x)
+    x = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x)
+    encoded = tf.keras.layers.MaxPooling2D((2, 2), padding='same')(x)
+
+    # Decoder
+    x = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(encoded)
+    x = tf.keras.layers.UpSampling2D((2, 2))(x)
+    x = tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same')(x)
+    x = tf.keras.layers.UpSampling2D((2, 2))(x)
+    decoded = tf.keras.layers.Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
+
+    # Autoencoder model
+    autoencoder = tf.keras.Model(input_img, decoded)
+    return autoencoder
+
+# Construir y compilar el modelo del autoencoder
+autoencoder = build_autoencoder()
+autoencoder.summary()
+
+autoencoder.compile(optimizer='Adam', loss='mean_squared_error', metrics='Accuracy')
+X_train = original_images
+Y_train = noisy_images
+autoencoder.fit(Y_train, X_train, epochs=120, batch_size=32)
+
+[0.00013141836097929627, 0.3088632822036743]
+
+
+######
+En esta versión, hemos ajustado el número de filtros en las capas convolucionales del encoder y del decoder para tener una arquitectura simétrica. Además, hemos mantenido la función de activación 'relu' en las capas convolucionales y 'sigmoid' en la capa de salida para la reconstrucción de la imagen.
