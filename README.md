@@ -4,4 +4,4 @@ We implemented a generative neural network to **enhance** the image quality of r
 Also we use advanced tools of AWS cloud for training the model.
 
 # Data
-We use the (MURA dataset)[https://stanfordmlgroup.github.io/competitions/mura/] which consist of 40k multi-view radiographic images of upper extremity radiographic study types: elbow, finger, forearm, hand, humerus, shoulder, and wrist. 
+We use the [MURA dataset](https://stanfordmlgroup.github.io/competitions/mura/) which consist of 40k multi-view radiographic images of upper extremity radiographic study types: elbow, finger, forearm, hand, humerus, shoulder, and wrist. 
