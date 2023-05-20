@@ -1,0 +1,18 @@
+main:
+  components_repository: "https://github.com/David-Damian/image-denoising-radiographics"
+  project_name:  image-denoising-radiographics
+  steps: all
+
+preprocess:
+  PREPROCESSING_BUCKET: "images-itam-denoising-dev"
+  RAW_TRAIN_PREFIX : 'raw/train'
+  RAW_VALID_PREFIX : 'raw/valid'
+  PREPROCESSED_TRAIN_PREFIX : 'preprocessed/train'
+  PREPROCESSED_VALID_PREFIX : 'preprocessed/valid'
+
+gaussian:
+  BUCKET_NAME: "images-itam-denoising-dev"
+  PREPROCESSED_TRAIN_PREFIX : 'preprocessed/train'
+  PREPROCESSED_VALID_PREFIX : 'preprocessed/valid'
+  GAUSSIAN_TRAIN_PREFIX : 'gaussian/train'
+  GAUSSIAN_VALID_PREFIX : 'gaussian/valid'
