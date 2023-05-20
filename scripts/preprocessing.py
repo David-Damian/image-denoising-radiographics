@@ -1,3 +1,21 @@
+""" Paquete para preprocesamiento de datos.
+Este script le permite al usuario hacer un procesamiento de los datos
+de entrenamiento y prueba.
+Al modificar este codigo, otro preprocesamiento puede ser especificado.
+
+Este archivo puede importarse como modulo y contiene las siguientes funciones:
+
+    * list_objects: lista y devuelve los objetos que se encuentran en un 
+                    bucket de Amazon S3 y coinciden con un prefijo 
+                    específico.
+    * prop_black_pixels: calcula la proporción de píxeles negros 
+                         en un imagen.
+    * put_image_s3: Redimensiona imagen y subir a bucket de S3.
+    * preprocess_image: preprocesa imagen y subida a un bucket de S3.
+    * preprocess_images: preprocesamiento de varias imágenes 
+                         almacenadas en un bucket de S3.
+"""
+
 import os
 import yaml
 import boto3
