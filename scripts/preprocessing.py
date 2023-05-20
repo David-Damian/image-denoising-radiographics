@@ -1,3 +1,5 @@
+import os
+import yaml
 import boto3
 from typing import List
 from PIL import Image
@@ -5,11 +7,15 @@ import io
 import numpy as np
 import cv2 as cv
 
-BUCKET_NAME = 'images-itam-denoising-dev'
-RAW_TRAIN_PREFIX = f'raw/train'
-RAW_VALID_PREFIX = f'raw/valid'
-PREPROCESSED_TRAIN_PREFIX = f'preprocessed/train'
-PREPROCESSED_VALID_PREFIX = f'preprocessed/valid'
+# Abrir yaml
+with open("./config.yaml", encoding="utf-8") as file:
+    config = yaml.safe_load(file)
+# Variables globales
+BUCKET_NAME = config['preprocess']['PREPROCESSING_BUCKET']
+RAW_TRAIN_PREFIX = config['preprocess']['RAW_TRAIN_PREFIX']
+RAW_VALID_PREFIX = config['preprocess']['RAW_VALID_PREFIX']
+PREPROCESSED_TRAIN_PREFIX = config['preprocess']['PREPROCESSED_TRAIN_PREFIX']
+PREPROCESSED_VALID_PREFIX = config['preprocess']['PREPROCESSED_VALID_PREFIX']
 
 session = boto3.Session(profile_name='datascientist')
 s3_client = session.client('s3')

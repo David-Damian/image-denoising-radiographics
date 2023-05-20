@@ -1,3 +1,5 @@
+import os
+import yaml
 import boto3
 from typing import List
 from PIL import Image, ImageFilter
@@ -5,11 +7,16 @@ import io
 import numpy as np
 import cv2 as cv
 
-BUCKET_NAME = 'images-itam-denoising-dev'
-PREPROCESSED_TRAIN_PREFIX = f'preprocessed/train'
-PREPROCESSED_VALID_PREFIX = f'preprocessed/valid'
-GAUSSIAN_TRAIN_PREFIX = f'gaussian/train'
-GAUSSIAN_VALID_PREFIX = f'gaussian/valid'
+# Abrir yaml
+with open("./config.yaml", encoding="utf-8") as file:
+    config = yaml.safe_load(file)
+
+# Variables globales
+BUCKET_NAME = config['gaussian']['BUCKET_NAME']
+PREPROCESSED_TRAIN_PREFIX = config['gaussian']['PREPROCESSED_TRAIN_PREFIX']
+PREPROCESSED_VALID_PREFIX = config['gaussian']['PREPROCESSED_VALID_PREFIX']
+GAUSSIAN_TRAIN_PREFIX = config['gaussian']['GAUSSIAN_TRAIN_PREFIX']
+GAUSSIAN_VALID_PREFIX = config['gaussian']['GAUSSIAN_VALID_PREFIX']
 
 session = boto3.Session(profile_name='datascientist')
 s3_client = session.client('s3')
