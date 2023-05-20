@@ -16,7 +16,6 @@ Este archivo puede importarse como modulo y contiene las siguientes funciones:
                          almacenadas en un bucket de S3.
 """
 
-import os
 import yaml
 import boto3
 from typing import List
@@ -26,14 +25,16 @@ import numpy as np
 import cv2 as cv
 
 # Abrir yaml
-with open("./config.yaml", encoding="utf-8") as file:
+with open("configs/config.yaml", encoding="utf-8") as file:
     config = yaml.safe_load(file)
+file.close()
+
 # Variables globales
 RAW_TRAIN_PREFIX = config['preprocess']['RAW_TRAIN_PREFIX']
 RAW_VALID_PREFIX = config['preprocess']['RAW_VALID_PREFIX']
 PREPROCESSED_TRAIN_PREFIX = config['preprocess']['PREPROCESSED_TRAIN_PREFIX']
 PREPROCESSED_VALID_PREFIX = config['preprocess']['PREPROCESSED_VALID_PREFIX']
-BUCKET_NAME = config['aws_config']['PREPROCESSING_BUCKET']
+BUCKET_NAME = config['aws_config']['BUCKET_NAME']
 S3_PROFILE = config['aws_config']['PROFILE_NAME']
 
 session = boto3.Session(profile_name=S3_PROFILE)
@@ -114,17 +115,18 @@ def preprocess_images(
         count_img += was_image_saved
     return count_img
 
-train_objects = list_objects(s3_client, BUCKET_NAME, RAW_TRAIN_PREFIX)
-train_objects = [obj['Key'] for obj in train_objects]
+if __name__ == '__main__':
+    train_objects = list_objects(s3_client, BUCKET_NAME, RAW_TRAIN_PREFIX)
+    train_objects = [obj['Key'] for obj in train_objects]
 
-valid_objects = list_objects(s3_client, BUCKET_NAME, RAW_VALID_PREFIX)
-valid_objects = [obj['Key'] for obj in valid_objects]
+    valid_objects = list_objects(s3_client, BUCKET_NAME, RAW_VALID_PREFIX)
+    valid_objects = [obj['Key'] for obj in valid_objects]
 
-print(preprocess_images(s3_client, BUCKET_NAME, PREPROCESSED_TRAIN_PREFIX, train_objects))
-print(preprocess_images(s3_client, BUCKET_NAME, PREPROCESSED_VALID_PREFIX, valid_objects))
+    print(preprocess_images(s3_client, BUCKET_NAME, PREPROCESSED_TRAIN_PREFIX, train_objects))
+    print(preprocess_images(s3_client, BUCKET_NAME, PREPROCESSED_VALID_PREFIX, valid_objects))
 
-# response = s3_client.get_object(Bucket = BUCKET_NAME, Key = 'preprocessed/valid/0_valid.png')
-# image_content = response['Body'].read()
-# image = Image.open(io.BytesIO(image_content))
-# image = np.asarray(image)
-# print(image)
+    # response = s3_client.get_object(Bucket = BUCKET_NAME, Key = 'preprocessed/valid/0_valid.png')
+    # image_content = response['Body'].read()
+    # image = Image.open(io.BytesIO(image_content))
+    # image = np.asarray(image)
+    # print(image)

@@ -12,7 +12,6 @@ Este archivo puede importarse como modulo y contiene las siguientes funciones:
                     imágenes almacenadas en S3.
 """
 
-import os
 import yaml
 import boto3
 from typing import List
@@ -22,8 +21,9 @@ import numpy as np
 import cv2 as cv
 
 # Abrir yaml
-with open("./config.yaml", encoding="utf-8") as file:
+with open("configs/config.yaml", encoding="utf-8") as file:
     config = yaml.safe_load(file)
+file.close()
 
 # Variables globales
 PREPROCESSED_TRAIN_PREFIX = config['gaussian']['PREPROCESSED_TRAIN_PREFIX']
@@ -97,14 +97,12 @@ def gaussian_noise(
         put_image_s3(client, bucket_name, prefix, new_img_name, res_image)
     return True
 
-train_objects = list_objects(s3_client, BUCKET_NAME, PREPROCESSED_TRAIN_PREFIX)
-train_objects = [obj['Key'] for obj in train_objects]
+if __name__ == '__main__':
+    train_objects = list_objects(s3_client, BUCKET_NAME, PREPROCESSED_TRAIN_PREFIX)
+    train_objects = [obj['Key'] for obj in train_objects]
 
-valid_objects = list_objects(s3_client, BUCKET_NAME, PREPROCESSED_VALID_PREFIX)
-valid_objects = [obj['Key'] for obj in valid_objects]
+    valid_objects = list_objects(s3_client, BUCKET_NAME, PREPROCESSED_VALID_PREFIX)
+    valid_objects = [obj['Key'] for obj in valid_objects]
 
-print(gaussian_noise(s3_client, BUCKET_NAME, GAUSSIAN_TRAIN_PREFIX, train_objects))
-print(gaussian_noise(s3_client, BUCKET_NAME, GAUSSIAN_VALID_PREFIX, valid_objects))
-
-
-
+    print(gaussian_noise(s3_client, BUCKET_NAME, GAUSSIAN_TRAIN_PREFIX, train_objects))
+    print(gaussian_noise(s3_client, BUCKET_NAME, GAUSSIAN_VALID_PREFIX, valid_objects))
