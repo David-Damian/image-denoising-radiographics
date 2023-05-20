@@ -1,3 +1,17 @@
+""" Paquete para adición de ruido gaussiano a imágenes.
+Este script le permite al usuario aplicar ruido gaussiano
+a imagenes almacenadas en S3.
+
+Este archivo puede importarse como modulo y contiene las siguientes funciones:
+
+    * list_objects: lista y devuelve los objetos que se encuentran en un 
+                    bucket de Amazon S3 y coinciden con un prefijo 
+                    específico.
+    * add_noise: aplica un efecto de desenfoque gaussiano a una imagen.
+    * gaussian_noise: agrega un efecto de ruido gaussiano a 
+                    imágenes almacenadas en S3.
+"""
+
 import os
 import yaml
 import boto3
