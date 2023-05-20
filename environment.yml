@@ -14,5 +14,4 @@ dependencies:
   - pillow
   - yaml
   - boto3
-  - cv2
-  - io
+  - opencv
