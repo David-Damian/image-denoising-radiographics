@@ -12,6 +12,7 @@ with open(train_origin_path) as f:
     lines = f.readlines()
     for line in lines:
         origin = f'data/{line.strip()}'
+        print(origin)
         if os.path.exists(origin):
             shutil.move(origin, f'{train_dest_path}/image_{img_num}.png')
             img_num += 1
@@ -23,6 +24,7 @@ with open(valid_origin_path) as g:
     for line in lines:
         origin = f'data/{line.strip()}'
         if os.path.exists(origin):
+            print(origin)
             shutil.move(origin, f'{valid_dest_path}/image_{img_num}.png')
             img_num += 1
 g.close()
