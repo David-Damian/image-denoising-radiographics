@@ -5,3 +5,15 @@ Also we use advanced tools of AWS cloud for training the model.
 
 # Data
 We use the [MURA dataset](https://stanfordmlgroup.github.io/competitions/mura/) which consist of 40k multi-view radiographic images of upper extremity radiographic study types: elbow, finger, forearm, hand, humerus, shoulder, and wrist. 
+
+# Estructura de repositorio
+```
+.
+├── data/                   # Data used in the project.
+└── docs/                   # 
+├── notebooks/              # Notebooks
+├── scripts/                # Scripts 
+├── README.md               # Project description
+├── environments.yml        # YAML file that defines the environment and dependencies of the project 
+
+```
