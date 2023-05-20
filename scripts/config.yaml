@@ -11,8 +11,11 @@ preprocess:
   PREPROCESSED_VALID_PREFIX : 'preprocessed/valid'
 
 gaussian:
-  BUCKET_NAME: "images-itam-denoising-dev"
   PREPROCESSED_TRAIN_PREFIX : 'preprocessed/train'
   PREPROCESSED_VALID_PREFIX : 'preprocessed/valid'
   GAUSSIAN_TRAIN_PREFIX : 'gaussian/train'
   GAUSSIAN_VALID_PREFIX : 'gaussian/valid'
+
+aws_config:
+  PROFILE_NAME: 'datascientist'
+  BUCKET_NAME: "images-itam-denoising-dev"

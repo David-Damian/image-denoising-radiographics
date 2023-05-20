@@ -26,13 +26,14 @@ with open("./config.yaml", encoding="utf-8") as file:
     config = yaml.safe_load(file)
 
 # Variables globales
-BUCKET_NAME = config['gaussian']['BUCKET_NAME']
 PREPROCESSED_TRAIN_PREFIX = config['gaussian']['PREPROCESSED_TRAIN_PREFIX']
 PREPROCESSED_VALID_PREFIX = config['gaussian']['PREPROCESSED_VALID_PREFIX']
 GAUSSIAN_TRAIN_PREFIX = config['gaussian']['GAUSSIAN_TRAIN_PREFIX']
 GAUSSIAN_VALID_PREFIX = config['gaussian']['GAUSSIAN_VALID_PREFIX']
+BUCKET_NAME = config['aws_config']['BUCKET_NAME']
+S3_PROFILE = config['aws_config']['PROFILE_NAME']
 
-session = boto3.Session(profile_name='datascientist')
+session = boto3.Session(profile_name=S3_PROFILE)
 s3_client = session.client('s3')
 
 def list_objects(client = None, bucket_name: str = None, prefix: str = None):
