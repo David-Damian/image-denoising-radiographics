@@ -17,5 +17,5 @@ gaussian:
 
 aws_config:
   PROFILE_NAME: 'datascientist'
-  BUCKET_NAME: "images-itam-denoising-dev"
-  PREPROCESSING_BUCKET: "images-itam-denoising-dev"
+  BUCKET_NAME: "images-itam-denoising"
+  BUCKET_NAME_DEV: "images-itam-denoising-dev"
