@@ -4,7 +4,6 @@ main:
   steps: all
 
 preprocess:
-  PREPROCESSING_BUCKET: "images-itam-denoising-dev"
   RAW_TRAIN_PREFIX : 'raw/train'
   RAW_VALID_PREFIX : 'raw/valid'
   PREPROCESSED_TRAIN_PREFIX : 'preprocessed/train'
@@ -19,3 +18,4 @@ gaussian:
 aws_config:
   PROFILE_NAME: 'datascientist'
   BUCKET_NAME: "images-itam-denoising-dev"
+  PREPROCESSING_BUCKET: "images-itam-denoising-dev"

@@ -29,13 +29,14 @@ import cv2 as cv
 with open("./config.yaml", encoding="utf-8") as file:
     config = yaml.safe_load(file)
 # Variables globales
-BUCKET_NAME = config['preprocess']['PREPROCESSING_BUCKET']
 RAW_TRAIN_PREFIX = config['preprocess']['RAW_TRAIN_PREFIX']
 RAW_VALID_PREFIX = config['preprocess']['RAW_VALID_PREFIX']
 PREPROCESSED_TRAIN_PREFIX = config['preprocess']['PREPROCESSED_TRAIN_PREFIX']
 PREPROCESSED_VALID_PREFIX = config['preprocess']['PREPROCESSED_VALID_PREFIX']
+BUCKET_NAME = config['aws_config']['PREPROCESSING_BUCKET']
+S3_PROFILE = config['aws_config']['PROFILE_NAME']
 
-session = boto3.Session(profile_name='datascientist')
+session = boto3.Session(profile_name=S3_PROFILE)
 s3_client = session.client('s3')
 
 def list_objects(client = None, bucket_name: str = None, prefix: str = None):
