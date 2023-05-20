@@ -1,0 +1,26 @@
+def build_autoencoder():
+    # Encoder
+    input_img = tf.keras.Input(shape=(64, 52, 3))
+    x = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(input_img)
+    x = tf.keras.layers.MaxPooling2D((2, 2), padding='same')(x)
+    x = tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same')(x)
+    encoded = tf.keras.layers.MaxPooling2D((2, 2), padding='same')(x)
+
+    # Decoder
+   x = tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same')(encoded)
+    x = tf.keras.layers.UpSampling2D((2, 2))(x)
+    x = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x)
+    x = tf.keras.layers.UpSampling2D((2, 2))(x)
+    decoded = tf.keras.layers.Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
+
+  mse				accuracy  
+[0.00013241785927675664, 0.45843881368637085]	
+
+
+    # Autoencoder model
+    autoencoder = Model(input_img, decoded)
+    return autoencoder
+
+# Construir y compilar el modelo del autoencoder
+autoencoder = build_autoencoder()
+autoencoder.summary()
