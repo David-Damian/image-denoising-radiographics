@@ -64,8 +64,8 @@ def preprocess_image(
     pbp = prop_black_pixels(tmp_image)
     if pbp <= 0.6:
         img_shape = tmp_image.shape
-        h = img_shape[1]
-        w = img_shape[0]
+        h = img_shape[0]
+        w = img_shape[1]
         if w > h:
             tmp_image = cv.rotate(tmp_image, cv.ROTATE_90_CLOCKWISE)
         if w > 250:
