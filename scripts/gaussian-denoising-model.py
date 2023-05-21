@@ -11,6 +11,8 @@ import logging
 from typing import List
 from PIL import Image
 from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, Conv2D, MaxPool2D, UpSampling2D
+from tensorflow.keras.layers import BatchNormalization, Dropout, LeakyReLU
 
 logging.basicConfig(level=logging.INFO)
 
@@ -54,6 +56,7 @@ def build_autoencoder(noisy_images, original_images):
         optimizer="adam", loss="mean_squared_error", metrics=["accuracy"]
     )
     logging.info("Training model")
+    # import pdb; pdb.set_trace()
     autoencoder.fit(
         noisy_images,
         original_images,
@@ -97,8 +100,8 @@ def _load_training_data_y():
     original_images = []
     counter = 0
     for object in s3_objects:
-        if counter == 20:
-            break
+        # if counter == 20:
+        #     break
         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=object["Key"])
         image = response["Body"].read()
         image = Image.open(io.BytesIO(image))
@@ -107,6 +110,7 @@ def _load_training_data_y():
         original_images.append(image)
         counter += 1
     original_images = np.expand_dims(original_images, axis=-1)
+    original_images = np.squeeze(original_images)
     logging.info("Loading training finished")
     return original_images
 
@@ -124,8 +128,8 @@ def _load_training_data_x():
     noisy_images = []
     counter = 0
     for object in s3_objects:
-        if counter == 20:
-            break
+        # if counter == 20:
+        #     break
         logging.info(f"Loading object {counter}: {object}")
         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=object["Key"])
         image = response["Body"].read()
@@ -135,6 +139,8 @@ def _load_training_data_x():
         noisy_images.append(image)
         counter += 1
     noisy_images = np.expand_dims(noisy_images, axis=-1)
+    noisy_images = np.squeeze(noisy_images)
+
     logging.info("Loading training data noisy finished")
     return noisy_images
 
@@ -146,38 +152,6 @@ def format_image(image, fx, fy):
     if len(image.shape) != 3:
         image = cv.cvtColor(image, cv.COLOR_GRAY2BGR)
     return image
-
-
-# def _load_testing_data():
-#     session = boto3.Session(profile_name='datascientist')
-#     s3_client = session.client('s3')
-#     BUCKET_NAME='images-itam-denoising'
-#     RAW_VALID_PREFIX : 'preprocessed/valid'
-#     s3_objects = list_objects(client = s3_client, bucket_name=BUCKET_NAME, prefix= RAW_VALID_PREFIX)
-#     noisy_images_valid = []
-#     for object in s3_objects:
-#         response = s3_client.get_object(Bucket = BUCKET_NAME, Key = object)
-#         image = response['Body'].read()
-#         image = Image.open(io.BytesIO(image))
-#         image = np.asarray(image)
-#         # appendear imagenes
-#         noisy_images_valid.append(image)
-
-#     return noisy_images_valid
-
-# def _parse_args():
-# parser = argparse.ArgumentParser()
-
-# # Data, model, and output directories
-# # model_dir is always passed in from SageMaker. By default this is a S3 path under the default bucket.
-# parser.add_argument("--model_dir", type=str)
-# parser.add_argument("--sm-model-dir", type=str, default=os.environ.get("SM_MODEL_DIR"))
-# parser.add_argument("--train", type=str, default=os.environ.get("SM_CHANNEL_TRAINING"))
-# parser.add_argument("--hosts", type=list, default=json.loads(os.environ.get("SM_HOSTS")))
-# parser.add_argument("--current-host", type=str, default=os.environ.get("SM_CURRENT_HOST"))
-
-# return parser.parse_known_args()
-
 
 if __name__ == "__main__":
     # args, unknown = _parse_args()

@@ -1,15 +1,13 @@
 import os
-from matplotlib import pyplot as plt
 import numpy as np
 import sagemaker
 from sagemaker import get_execution_role
 from sagemaker.tensorflow import TensorFlow
+import boto3 
 
-sagemaker_session = sagemaker.Session()
-
-role = get_execution_role()
-region = sagemaker_session.boto_session.region_name
-
+# session = sagemaker.Session(boto3.session.Session())")
+sagemaker_session = sagemaker.Session(boto3.session.Session())
+role = "arn:aws:iam::345921935563:role/service-role/SageMaker-mldev"
 
 autoencoder = TensorFlow(
     entry_point="gaussian-denoising-model.py",
@@ -19,6 +17,10 @@ autoencoder = TensorFlow(
     framework_version="2.1.0",
     py_version="py3",
     distribution={"parameter_server": {"enabled": True}},
+    output_path="s3://images-itam-denoising/model",
 )
 
 autoencoder.fit()
+
+
+
