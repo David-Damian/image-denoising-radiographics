@@ -37,13 +37,19 @@ session = boto3.Session(profile_name=S3_PROFILE)
 s3_client = session.client('s3')
 
 def list_objects(client = None, bucket_name: str = None, prefix: str = None):
+    # crear lista donde se almacenan las _uri_ de cada imagen
     s3_objects = []
     if client:
         try:
+            # listar las imágenes que se encuentran en el bucket dado y que coinciden 
+            # con el prefijo
             s3_response = client.list_objects_v2(Bucket = bucket_name, Prefix = prefix)
             s3_objects.extend(s3_response['Contents'])
+            # en caso de que haya varias páginas de imágenes, iterar sobre cada una
             while s3_response['IsTruncated']:
+                # solicitar el siguiente iterador correspondiente a la siguiente página
                 next_token = s3_response['NextContinuationToken']
+                # listar los objetos que se encuentren en la página actual
                 s3_response = client.list_objects_v2(
                                                      Bucket = bucket_name,
                                                      Prefix = prefix,
@@ -55,10 +61,6 @@ def list_objects(client = None, bucket_name: str = None, prefix: str = None):
         except Exception:
             raise Exception
 
-def prop_black_pixels(image):
-    num_black_pixels = np.sum(image <= 30)
-    return num_black_pixels / image.size
-
 def put_image_s3(
                  client = None, 
                  bucket_name: str = None,
@@ -66,19 +68,26 @@ def put_image_s3(
                  img_name: str = None,
                  image: np.array = None
             ):
+    # codificar la imagen Numpy a png
     _, im_buff_arr = cv.imencode(".png", image)
+    # regresar la imagen de Numpy a bytes para guardar en S3
     byte_im = im_buff_arr.tobytes()
     name = f'{prefix}/{img_name}'
     print(name)
+    # guardar la imagen en el bucket con el nombre creado
     client.put_object(Bucket = bucket_name, Body = byte_im, Key = name)
 
 def add_noise(
               object: str = None,
               image: Image = None,
+              radius: int = 2.3
             ):
+    # mantener únicamente el nombre y descartar el prefijo
     img_name = object.split('/')[-1]
+    # agregar '_blured' al nombre de la imagen
     new_img_name = img_name[:-4] + "_blured" + img_name[-4:]
-    blured_img = image.filter(ImageFilter.GaussianBlur(2.3))
+    # aplicar el ruido gaussiano a la imagen con ayuda de PIL
+    blured_img = image.filter(ImageFilter.GaussianBlur(radius = radius))
     return new_img_name, blured_img
 
 
@@ -89,19 +98,27 @@ def gaussian_noise(
                     objects: List[str] = []
                 ):
     for object in objects:
+        # obtener la imagen de S3 en bytes
         response = client.get_object(Bucket = bucket_name, Key = object)
         image = response['Body'].read()
+        # leer la imagen en formato PIL
         image_pil = Image.open(io.BytesIO(image))
         new_img_name, image_blured = add_noise(object, image_pil)
+        # convertir la imagen con ruido de PIL a Numpy
         res_image = np.asarray(image_blured)
+        # guardar objeto en S3
         put_image_s3(client, bucket_name, prefix, new_img_name, res_image)
     return True
 
 if __name__ == '__main__':
+    # listar las imágenes en el bucket y con el prefijo dados
     train_objects = list_objects(s3_client, BUCKET_NAME, PREPROCESSED_TRAIN_PREFIX)
+    # mantener únicamente el nombre de la imagen
     train_objects = [obj['Key'] for obj in train_objects]
 
+    # listar las imágenes en el bucket y con el prefijo dados
     valid_objects = list_objects(s3_client, BUCKET_NAME, PREPROCESSED_VALID_PREFIX)
+    # mantener únicamente el nombre de la imagen
     valid_objects = [obj['Key'] for obj in valid_objects]
 
     print(gaussian_noise(s3_client, BUCKET_NAME, GAUSSIAN_TRAIN_PREFIX, train_objects))
