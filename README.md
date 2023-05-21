@@ -17,3 +17,5 @@ We use the [MURA dataset](https://stanfordmlgroup.github.io/competitions/mura/) 
 ├── environments.yml        # YAML file that defines the environment and dependencies of the project 
 
 ```
+# AWS Architecture
+![alt text](images/Arquitectura.png)
