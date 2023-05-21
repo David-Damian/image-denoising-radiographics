@@ -117,9 +117,9 @@ def _load_training_data_x():
     session = boto3.Session(profile_name="datascientist")
     s3_client = session.client("s3")
     BUCKET_NAME = "images-itam-denoising"
-    RAW_TRAIN_PREFIX = "gaussian/train"
+    GAUSSIAN_TRAIN_PREFIX = "gaussian/train"
     s3_objects = list_objects(
-        client=s3_client, bucket_name=BUCKET_NAME, prefix=RAW_TRAIN_PREFIX
+        client=s3_client, bucket_name=BUCKET_NAME, prefix=GAUSSIAN_TRAIN_PREFIX
     )
     noisy_images = []
     counter = 0
@@ -134,7 +134,6 @@ def _load_training_data_x():
         image = format_image(image, NW, NH)
         noisy_images.append(image)
         counter += 1
-    import pdb;pdb.set_trace()
     noisy_images = np.expand_dims(noisy_images, axis=-1)
     logging.info("Loading training data noisy finished")
     return noisy_images
@@ -144,6 +143,8 @@ def format_image(image, fx, fy):
     image = cv.resize(image, (fx, fy), interpolation=cv.INTER_AREA)
     # Normalizar los valores de píxeles en el rango [0, 1]
     image = image.astype(np.float32) / 255.0
+    if len(image.shape) != 3:
+        image = cv.cvtColor(image, cv.COLOR_GRAY2BGR)
     return image
 
 
