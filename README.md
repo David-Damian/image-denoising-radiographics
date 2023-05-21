@@ -1,7 +1,7 @@
 # Image denoising for radiographics.
-We implemented a generative neural network to **enhance** the image quality of radiographs that are poorly taken, wrinkled, or have other artifacts. To simulate these artifacts, we are incorporating Poisson noise, Gaussian noise, and other similar techniques into the images.
+We implemented an *Autoencoder neural network* to **enhance** the image quality of x-rays that are poorly taken, wrinkled, or other visual constraints. To simulate these visual constraints, we added Gaussian noise to the original images looking to reconstruct them with no noise.
 
-Also we use advanced tools of AWS cloud for training the model.
+For the computation, we used some AWS tools as EC2 instances, Sagemaker and S3 buckets.
 
 # Data
 We use the [MURA dataset](https://stanfordmlgroup.github.io/competitions/mura/) which consist of 40k multi-view radiographic images of upper extremity radiographic study types: elbow, finger, forearm, hand, humerus, shoulder, and wrist. 
