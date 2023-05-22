@@ -30,5 +30,6 @@ def get_prediction(image, autoencoder):
 
     images_valid = preprocessed_images(image)
     print(type(images_valid), images_valid.shape, images_valid[0].shape)
+    print(type(images_valid), images_valid.shape, images_valid[0].shape)
     print(images_valid)
     return autoencoder.predict(images_valid)
