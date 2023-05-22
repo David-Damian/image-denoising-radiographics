@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  # db:
+  #   image: "postgres"
+  #   environment:
+  #     POSTGRES_HOST_AUTH_METHOD: "trust"
+  #   volumes:
+  #     - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+  #     - ./db:/db
+  #     - pg_db:/var/lib/postgresql/db
+  #   ports:
+  #     - 5432:5432
+  #   networks:
+  #     - default
+  # api:
+  #   build: ./backend
+  #   env_file:
+  #     - ".env"
+  #   ports: 
+  #     - 8080:8080
+  #   networks:
+  #     - default
+  #   depends_on:
+  #     - db
+  app:
+    build: ./app
+    ports:
+      - 80:80
+    networks:
+      - default
+
+volumes:
+  pg_db:
