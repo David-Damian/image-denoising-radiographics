@@ -40,18 +40,37 @@ S3_PROFILE = config['aws_config']['PROFILE_NAME']
 session = boto3.Session(profile_name=S3_PROFILE)
 s3_client = session.client('s3')
 
-def list_objects(client = None, bucket_name: str = None, prefix: str = None):
+def list_objects(client = None, 
+                 bucket_name: str = None, 
+                 prefix: str = None):
+    """
+    Función para listar los objetos que se encuentran en un 
+    bucket de Amazon S3 y coinciden con un prefijo específico.
+    ----------------------------------------------------------
+    Inputs:
+        client (boto3.client): Cliente de Amazon S3 para interactuar 
+                               con el servicio.
+        bucket_name (str): Nombre del bucket de Amazon S3.
+        prefix (str): Prefijo utilizado para filtrar los objetos 
+                      del bucket.
+    
+    Outputs: 
+        s3_objects (list): Lista de objetos que coinciden con el 
+                           prefijo especificado.
+    """
     # crear lista donde se almacenan las _uri_ de cada imagen
     s3_objects = []
     if client:
         try:
-            # listar las imágenes que se encuentran en el bucket dado y que coinciden
-            # con el prefijo
+            # listar las imágenes que se encuentran
+            # en el bucket dado y que coinciden con el prefijo
             s3_response = client.list_objects_v2(Bucket = bucket_name, Prefix = prefix)
             s3_objects.extend(s3_response['Contents'])
-            # en caso de que haya varias páginas de imágenes, iterar sobre cada una
+            # en caso de que haya varias páginas de imágenes, 
+            # iterar sobre cada una
             while s3_response['IsTruncated']:
-                # solicitar el siguiente iterador correspondiente a la siguiente página
+                # solicitar el siguiente iterador correspondiente 
+                # a la siguiente página
                 next_token = s3_response['NextContinuationToken']
                 # listar los objetos que se encuentren en la página actual
                 s3_response = client.list_objects_v2(
@@ -66,6 +85,15 @@ def list_objects(client = None, bucket_name: str = None, prefix: str = None):
             raise Exception
 
 def prop_black_pixels(image):
+    """
+    Función para evaluar la proporción de píxeles negros en una imagen.
+    ---------------------------------------------------------------
+    Inputs:
+        image (np.array): Arreglo que representa la imagen.
+    
+    Outputs: 
+        prop (float): Proporción de píxeles negros en la imagen.
+    """
     # evalúa la proporción de pixeles con valores menores o igual a 30
     num_black_pixels = np.sum(image <= 30)
     return num_black_pixels / image.size
@@ -77,6 +105,22 @@ def put_image_s3(
                  image: np.array = None,
                  count_img: int = 0
             ):
+    """
+    Función para guardar una imagen en un bucket de Amazon S3.
+    --------------------------------------------------------
+    Inputs:
+        client (boto3.client): Cliente de Amazon S3 para interactuar 
+                                con el servicio.
+        bucket_name (str): Nombre del bucket de Amazon S3.
+        prefix (str): Prefijo utilizado para organizar las imágenes 
+                      en el bucket.
+        img_name (str): Nombre de la imagen a guardar en el bucket.
+        image (np.array): Arreglo que representa la imagen 
+                          a guardar.
+    
+    Outputs: 
+        None
+    """
     # reescalar a un tamaño predefinido
     tmp_resized = cv.resize(image, (400,512), interpolation = cv.INTER_AREA)
     # codificar la imagen Numpy a png
@@ -97,6 +141,24 @@ def preprocess_image(
                     image: np.array = None,
                     count_img: int = 0
                     ):
+    """
+    Función para realizar el preprocesamiento de una imagen 
+    antes de ser guardada en un bucket de Amazon S3.
+    -----------------------------------------------------------------------------------------------------
+    Inputs:
+        client (boto3.client): Cliente de Amazon S3 para 
+        interactuar con el servicio.
+        bucket_name (str): Nombre del bucket de Amazon S3.
+        prefix (str): Prefijo utilizado para organizar la 
+        imagen en el bucket.
+        image (np.array): Arreglo NumPy que representa la imagen.
+        count_img (int): Contador utilizado para generar un 
+        nombre único para la imagen.
+    
+    Outputs: 
+        response (int): Respuesta que indica si la imagen fue 
+                        procesada correctamente (1) o no (0).
+    """
     response = 0
     tmp_image = image.copy()
     # obtener la proporción de pixeles negros que posee la imagen
