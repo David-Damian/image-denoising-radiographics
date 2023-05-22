@@ -20,7 +20,7 @@ import io
 import numpy as np
 import cv2 as cv
 
-# Abrir yaml
+# Abrir yaml para obtener variables globales
 with open("configs/config.yaml", encoding="utf-8") as file:
     config = yaml.safe_load(file)
 file.close()
@@ -37,6 +37,21 @@ session = boto3.Session(profile_name=S3_PROFILE)
 s3_client = session.client('s3')
 
 def list_objects(client = None, bucket_name: str = None, prefix: str = None):
+    """
+    Función para listar los objetos que se encuentran en un 
+    bucket de Amazon S3 y coinciden con un prefijo específico.
+    ----------------------------------------------------------
+    Inputs:
+        client (boto3.client): Cliente de Amazon S3 para interactuar 
+                               con el servicio.
+        bucket_name (str): Nombre del bucket de Amazon S3.
+        prefix (str): Prefijo utilizado para filtrar los objetos 
+                      del bucket.
+    
+    Outputs: 
+        s3_objects (list): Lista de objetos que coinciden con el 
+                           prefijo especificado.
+    """
     # crear lista donde se almacenan las _uri_ de cada imagen
     s3_objects = []
     if client:
@@ -68,6 +83,22 @@ def put_image_s3(
                  img_name: str = None,
                  image: np.array = None
             ):
+    """
+    Función para guardar una imagen en un bucket de Amazon S3.
+    --------------------------------------------------------
+    Inputs:
+        client (boto3.client): Cliente de Amazon S3 para interactuar 
+                                con el servicio.
+        bucket_name (str): Nombre del bucket de Amazon S3.
+        prefix (str): Prefijo utilizado para organizar las imágenes 
+                      en el bucket.
+        img_name (str): Nombre de la imagen a guardar en el bucket.
+        image (np.array): Arreglo que representa la imagen 
+                          a guardar.
+    
+    Outputs: 
+        None
+    """
     # codificar la imagen Numpy a png
     _, im_buff_arr = cv.imencode(".png", image)
     # regresar la imagen de Numpy a bytes para guardar en S3
@@ -97,6 +128,25 @@ def gaussian_noise(
                     prefix: str = None,
                     objects: List[str] = []
                 ):
+    """
+    Función para agregar ruido gaussiano a varias imágenes 
+    almacenadas en un bucket de Amazon S3.
+    -------------------------------------------------------------------------------------------
+    Inputs:
+        client (boto3.client): Cliente de Amazon S3 para 
+                               interactuar con el servicio.
+        bucket_name (str): Nombre del bucket de Amazon S3.
+        prefix (str): Prefijo utilizado para organizar las 
+                      imágenes en el bucket.
+        objects (List[str]): Lista de nombres de objetos 
+        (imágenes) en el bucket a las que se les agregará 
+         ruido.
+    
+    Outputs: 
+        True (bool): Indica que se completó exitosamente el 
+                     proceso de agregar ruido a las imágenes 
+                     y guardarlas en S3.
+    """
     for object in objects:
         # obtener la imagen de S3 en bytes
         response = client.get_object(Bucket = bucket_name, Key = object)
@@ -121,5 +171,7 @@ if __name__ == '__main__':
     # mantener únicamente el nombre de la imagen
     valid_objects = [obj['Key'] for obj in valid_objects]
 
+    # agregar ruido gaussiano a las imágenes de entrenamiento y guardarlas en S3
     print(gaussian_noise(s3_client, BUCKET_NAME, GAUSSIAN_TRAIN_PREFIX, train_objects))
+    # agregar ruido gaussiano a las imágenes de validación y guardarlas en S3
     print(gaussian_noise(s3_client, BUCKET_NAME, GAUSSIAN_VALID_PREFIX, valid_objects))
