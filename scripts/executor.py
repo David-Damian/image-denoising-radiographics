@@ -1,3 +1,7 @@
+"""
+Modulo para entrenar un modelo de denoising de imágenes utilizando SageMaker.
+"""
+
 import os
 import numpy as np
 import sagemaker
@@ -5,10 +9,11 @@ from sagemaker import get_execution_role
 from sagemaker.tensorflow import TensorFlow
 import boto3 
 
-# session = sagemaker.Session(boto3.session.Session())")
+# Configura la sesión de SageMaker
 sagemaker_session = sagemaker.Session(boto3.session.Session())
 role = "arn:aws:iam::345921935563:role/service-role/SageMaker-mldev"
 
+# Creación de la instancia de TensorFlow en SageMaker
 autoencoder = TensorFlow(
     entry_point="gaussian-denoising-model.py",
     role=role,
@@ -19,7 +24,7 @@ autoencoder = TensorFlow(
     distribution={"parameter_server": {"enabled": True}},
     output_path="s3://images-itam-denoising/model",
 )
-
+# inicia entrenamiento del modelo
 autoencoder.fit()
 
 
