@@ -1,3 +1,12 @@
+"""
+Script para organizar las imágenes de entrenamiento y validación del 
+conjunto de datos MURA en una estructura de directorios deseada. 
+Mueve las imágenes de la ubicación original a las nuevas ubicaciones 
+según se especifica en los archivos CSV de rutas de imágenes.
+
+Nota: Asegúrate de que las rutas de los archivos CSV y las rutas de destino 
+estén configuradas correctamente antes de ejecutar el script.
+"""
 import os
 import shutil
 
