@@ -1,3 +1,13 @@
+"""
+Script para entrenar un modelo de autoencoder en Amazon SageMaker. 
+Este modelo se utiliza para procesar imágenes, reconstruyendo imágenes con ruido 
+a partir de imágenes sin ruido. El script carga los datos de entrenamiento desde 
+un bucket de Amazon S3 y utiliza TensorFlow para construir y entrenar el modelo 
+de autoencoder. 
+
+El modelo resultante puede utilizarse para denoising de imágenes.
+"""
+
 import argparse
 import json
 import os
@@ -23,6 +33,20 @@ OH, NH = 64, 64
 
 # Definir la arquitectura del autoencoder
 def build_autoencoder(noisy_images, original_images):
+    """
+    Construye un modelo de autoencoder para el procesamiento de imágenes.
+    El modelo se compone de capas de codificación y decodificación para 
+    reconstruir imágenes con ruido añadido
+    a partir de imágenes sin ruido.
+
+    Inputs:
+        - noisy_images: Imágenes con ruido que se reconstruiran con este modelo
+        - original_images: Imágenes originales sin ruido.
+
+    Output:
+        - autoencoder: El modelo de autoencoder construido.
+
+    """
     # Encoder
     input_img = Input(shape=(64, 48, 3))
     h = BatchNormalization()(input_img)
@@ -88,7 +112,14 @@ def list_objects(client=None, bucket_name: str = None, prefix: str = None):
 
 
 def _load_training_data_y():
-    """Load training data"""
+    """
+    Carga los datos de entrenamiento (imágenes originales) 
+    desde un bucket de S3.
+
+    Returns:
+        - original_images(np.array): Un array que contiene las 
+                                     imágenes originales.
+    """
     logging.info("Loading training data")
     session = boto3.Session(profile_name="datascientist")
     s3_client = session.client("s3")
@@ -116,7 +147,13 @@ def _load_training_data_y():
 
 
 def _load_training_data_x():
-    """Load training data"""
+    """
+    Carga los datos de entrenamiento (imágenes con ruido) 
+    desde un bucket de S3.
+
+    Returns:
+        - noisy_images(np.array): Arreglo que contiene las imágenes con ruido.
+    """
     logging.info("Loading training data noisy")
     session = boto3.Session(profile_name="datascientist")
     s3_client = session.client("s3")
@@ -146,6 +183,18 @@ def _load_training_data_x():
 
 
 def format_image(image, fx, fy):
+    """
+    Formatea una imagen ajustándola a un tamaño específico y normalizando 
+    los valores de píxeles en el rango [0, 1].
+
+    Inputs:
+        - image: La imagen a formatear.
+        - fx (int): El ancho deseado de la imagen.
+        - fy (int): La altura deseada de la imagen.
+
+    Returns:
+        - image: La imagen formateada.
+    """
     image = cv.resize(image, (fx, fy), interpolation=cv.INTER_AREA)
     # Normalizar los valores de píxeles en el rango [0, 1]
     image = image.astype(np.float32) / 255.0
@@ -153,6 +202,7 @@ def format_image(image, fx, fy):
         image = cv.cvtColor(image, cv.COLOR_GRAY2BGR)
     return image
 
+# ejecuta el código principal del script.
 if __name__ == "__main__":
     # args, unknown = _parse_args()
     logging.info("start")
