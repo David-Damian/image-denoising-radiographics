@@ -7,15 +7,15 @@ import numpy as np
 import sagemaker
 from sagemaker import get_execution_role
 from sagemaker.tensorflow import TensorFlow
-import boto3 
 
-# Configura la sesión de SageMaker
-sagemaker_session = sagemaker.Session(boto3.session.Session())
-role = "arn:aws:iam::345921935563:role/service-role/SageMaker-mldev"
+sagemaker_session = sagemaker.Session()
+
+role = get_execution_role()
+
 
 # Creación de la instancia de TensorFlow en SageMaker
 autoencoder = TensorFlow(
-    entry_point="gaussian-denoising-model.py",
+    entry_point="model.py",
     role=role,
     instance_count=2,
     instance_type="ml.m5.xlarge",

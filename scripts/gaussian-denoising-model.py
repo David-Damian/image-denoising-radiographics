@@ -30,6 +30,7 @@ logging.basicConfig(level=logging.INFO)
 OW, NW = 48, 48
 OH, NH = 64, 64
 
+TRAIN_SIZE = 1000
 
 # Definir la arquitectura del autoencoder
 def build_autoencoder(noisy_images, original_images):
@@ -80,7 +81,6 @@ def build_autoencoder(noisy_images, original_images):
         optimizer="adam", loss="mean_squared_error", metrics=["accuracy"]
     )
     logging.info("Training model")
-    # import pdb; pdb.set_trace()
     autoencoder.fit(
         noisy_images,
         original_images,
@@ -121,7 +121,7 @@ def _load_training_data_y():
                                      imágenes originales.
     """
     logging.info("Loading training data")
-    session = boto3.Session(profile_name="datascientist")
+    session = boto3.Session()
     s3_client = session.client("s3")
     BUCKET_NAME = "images-itam-denoising"
     RAW_TRAIN_PREFIX = "preprocessed/train"
@@ -129,17 +129,13 @@ def _load_training_data_y():
         client=s3_client, bucket_name=BUCKET_NAME, prefix=RAW_TRAIN_PREFIX
     )
     original_images = []
-    counter = 0
-    for object in s3_objects:
-        # if counter == 20:
-        #     break
+    for object in s3_objects[:TRAIN_SIZE]:
         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=object["Key"])
         image = response["Body"].read()
         image = Image.open(io.BytesIO(image))
         image = np.asarray(image)
         image = format_image(image, OW, OH)
         original_images.append(image)
-        counter += 1
     original_images = np.expand_dims(original_images, axis=-1)
     original_images = np.squeeze(original_images)
     logging.info("Loading training finished")
@@ -155,7 +151,7 @@ def _load_training_data_x():
         - noisy_images(np.array): Arreglo que contiene las imágenes con ruido.
     """
     logging.info("Loading training data noisy")
-    session = boto3.Session(profile_name="datascientist")
+    session = boto3.Session()
     s3_client = session.client("s3")
     BUCKET_NAME = "images-itam-denoising"
     GAUSSIAN_TRAIN_PREFIX = "gaussian/train"
@@ -163,18 +159,15 @@ def _load_training_data_x():
         client=s3_client, bucket_name=BUCKET_NAME, prefix=GAUSSIAN_TRAIN_PREFIX
     )
     noisy_images = []
-    counter = 0
-    for object in s3_objects:
-        # if counter == 20:
-        #     break
-        logging.info(f"Loading object {counter}: {object}")
+    for object in s3_objects[:TRAIN_SIZE]:
+
+        # logging.debug(f"Loading object {counter}: {object}")
         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=object["Key"])
         image = response["Body"].read()
         image = Image.open(io.BytesIO(image))
         image = np.asarray(image)
         image = format_image(image, NW, NH)
         noisy_images.append(image)
-        counter += 1
     noisy_images = np.expand_dims(noisy_images, axis=-1)
     noisy_images = np.squeeze(noisy_images)
 
