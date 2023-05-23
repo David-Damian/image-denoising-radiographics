@@ -9,13 +9,15 @@ We use the [MURA dataset](https://stanfordmlgroup.github.io/competitions/mura/) 
 # Repository structure
 ```
 .
-├── api/
-├── app/
-├── config/
+├── api/                    # FastAPI that would connect to SageMaker
+├── app/                    # Files for the Shiny dashboard
+├── config/                 # YAML configurations for python scripts and SageMaker.
 ├── data/                   # Data used in the project.
 ├── docs/                   # Documents for working backwards, architecture and presentation.
 ├── notebooks/              # Notebooks
-├── scripts/                # Scripts 
+├── results/                # Deep learning model results
+├── rsconnect/              # Template for shiny dashboard
+├── scripts/                # Scripts for extract, transform and load data to S3. Also model script for training.
 ├── README.md               # Project description
 ├── environments.yml        # YAML file that defines the environment and dependencies of the project 
 
