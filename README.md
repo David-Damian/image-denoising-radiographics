@@ -16,7 +16,6 @@ We use the [MURA dataset](https://stanfordmlgroup.github.io/competitions/mura/) 
 ├── docs/                   # Documents for working backwards, architecture and presentation.
 ├── notebooks/              # Notebooks
 ├── results/                # Deep learning model results
-├── rsconnect/              # Template for shiny dashboard
 ├── scripts/                # Scripts for extract, transform and load data to S3. Also model script for training.
 ├── README.md               # Project description
 ├── environments.yml        # YAML file that defines the environment and dependencies of the project 
