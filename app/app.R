@@ -3,9 +3,12 @@ library(RNifti)
 library(shinythemes)
 library(shinyWidgets)
 library(markdown)
-source("lazyr.R")
-source("interactive.R")
-source("animation.R")
+library(base64enc)
+library(shinyjs)
+
+source("requests.R")
+
+options(shiny.maxRequestSize = 30*1024^2)
 
 read_img_as_array <- function(path) {
   img_raw <- RNifti::readNifti(path)
@@ -16,22 +19,21 @@ read_img_as_array <- function(path) {
 }
 
 ui <- navbarPage(
-  "Shiny MRI",
+  "Rayos X",
   theme = shinytheme("cyborg"),
   tabPanel(
     "Home",
     fluidRow(
-      column(4, fileInput("your_dt", "Upload a .jpg, .png image")),
+      column(4, fileInput("upload", "Upload a .png image", accept = "image/png")),
       column(1, h2("|"),
         class = "text-center",
         style = "margin-top: -5px; "
-      ),
-      column(3, shinyWidgets::switchInput(
-        "interactive", "Interactive",
-        onStatus = "success"
-      ), style = "padding-top: 25px;")
+      )
     ),
-    uiOutput("raster_panel")
+    fluidRow(
+      column(4, uiOutput("image")),
+      column(1, uiOutput("image_2"))
+    ),
   ),
   tabPanel(
     "About",
@@ -39,32 +41,35 @@ ui <- navbarPage(
   )
 )
 
-server <- function(input, output, session) {
-  options(shiny.maxRequestSize = 500 * 1024^2)
+server <- function(input, output){
 
-  app_dt <- reactive({
-    if (is.null(input$your_dt)) {
-      out <- read_img_as_array(input$demo_dt)
-    } else {
-      datapath <- input$your_dt$datapath
-      if (tools::file_ext(datapath) == "gz") {
-        datapath <- sub("gz$", "nii.gz", datapath)
-        file.rename(input$your_dt$datapath, datapath)
-      }
-      out <- read_img_as_array(datapath)
+  base64 <- reactive({
+    inFile <- input[["upload"]]
+    if(!is.null(inFile)){
+      dataURI(file = inFile$datapath, mime = "image/png")
+      # status <- post_request(ext)
+
     }
-    return(out)
   })
 
-  output$raster_panel <- renderUI({
-    if (input$interactive) {
-      callModule(raster3d_interactive_Module, "mri_3d", im = app_dt)
-      raster3d_interactive_UI("mri_3d")
-    } else {
-      callModule(raster3d_animation_Module, "mri_3d", im = app_dt)
-      raster3d_animation_UI("mri_3d")
+  output[["image"]] <- renderUI({
+    if(!is.null(base64())){
+      tags$div(
+        tags$img(src= base64(), width="100%"),
+        style = "width: 400px;"
+      )
+    }
+  })
+
+  output[["image_2"]] <- renderUI({
+    if(!is.null(base64())){
+      b64_2 <- base64enc::dataURI(file="/app/mock/original_resized.png", mime="image/png")
+      delay(1000)
+      tags$div(
+        tags$img(src = b64_2, width="100%"),
+        style = "width: 400px;"
+      )
     }
   })
 }
-
 shinyApp(ui, server)

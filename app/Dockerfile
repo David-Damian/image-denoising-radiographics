@@ -21,12 +21,13 @@ RUN R -e 'install.packages(c(\
               "dplyr", "tidyverse", "RPostgreSQL",\
               "texreg", "sf", "ggthemes", "lfe", "shinylogs", \
               "jsonlite", "RNifti", "shinythemes","DT",\
-              "shinyWidgets", "markdown"\
+              "shinyWidgets", "markdown", "base64enc", "shinyjs"\
             ) \
           )'
 
 
 COPY . app/
+COPY mock/original_resized.png app/original_resized.png
 EXPOSE 80
 
 CMD ["R", "-e", "shiny::runApp('/app', host = '0.0.0.0', port = 80)"]
