@@ -9,8 +9,11 @@ We use the [MURA dataset](https://stanfordmlgroup.github.io/competitions/mura/) 
 # Repository structure
 ```
 .
+├── api/
+├── app/
+├── config/
 ├── data/                   # Data used in the project.
-└── docs/                   # 
+├── docs/                   # Documents for working backwards, architecture and presentation.
 ├── notebooks/              # Notebooks
 ├── scripts/                # Scripts 
 ├── README.md               # Project description
@@ -19,3 +22,6 @@ We use the [MURA dataset](https://stanfordmlgroup.github.io/competitions/mura/) 
 ```
 # AWS Architecture
 ![alt text](images/Arquitectura.png)
+
+# Reproducibility
+To ensure project reproducibility, execute the command `docker-compose up --build`.
